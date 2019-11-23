@@ -22,12 +22,13 @@ module Jekyll
       private
       def location_from_options(page)
         {
-          :latitude  => @options[:attributes][:latitude],
-          :longitude => @options[:attributes][:longitude],
-          :title     => @options[:attributes][:marker_title] || page["title"],
-          :icon      => @options[:attributes][:marker_icon] || page["marker_icon"],
-          :url       => @options[:attributes][:marker_url] || fetch_url(page),
-          :image     => @options[:attributes][:marker_img] || page["image"] || ""
+          :latitude   => @options[:attributes][:latitude],
+          :longitude  => @options[:attributes][:longitude],
+          :title      => @options[:attributes][:marker_title] || page["title"],
+          :icon       => @options[:attributes][:marker_icon] || page["marker_icon"],
+          :url        => @options[:attributes][:marker_url] || fetch_url(page),
+          :image      => @options[:attributes][:marker_img] || page["image"] || "",
+          :popup_html => @options[:attributes][:marker_popup_html] || ""
         }
       end
 
@@ -75,12 +76,14 @@ module Jekyll
       def match_filters?(doc)
         @options[:filters].each do |filter, value|
           if filter == "src"
-            return true unless doc.respond_to?(:relative_path)
-            return false unless doc.relative_path.start_with?(value)
+            if doc.respond_to?(:relative_path)
+              return false unless doc.relative_path.start_with?(value)
+            end
           elsif doc[filter].nil? || doc[filter] != value
             return false
           end
         end
+        return true
       end
 
       private
@@ -103,13 +106,15 @@ module Jekyll
       private
       def convert(document, location)
         {
-          :latitude  => location["latitude"],
-          :longitude => location["longitude"],
-          :title     => location["title"] || document["title"],
-          :icon      => location["marker_icon"] || document["marker_icon"],
-          :url       => location["url"] || fetch_url(document),
-          :url_text  => location["url_text"],
-          :image     => location["image"] || document["image"] || ""
+          :latitude   => location["latitude"],
+          :longitude  => location["longitude"],
+          :title      => location["title"] || document["title"],
+          :icon       => location["marker_icon"] || document["marker_icon"],
+          :url        => location["url"] || fetch_url(document),
+          :url_text   => location["url_text"],
+          :image      => location["image"] || document["image"] || "",
+          :popup_html => location["marker_popup_html"] \
+                         || document["marker_popup_html"] || ""
         }
       end
 
